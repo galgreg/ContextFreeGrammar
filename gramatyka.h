@@ -20,7 +20,7 @@ vector<string> split(const string &text, const string &delimiter);
 bool belongsToLanguage(
 		const RulesMap &grammarRules,
 		const string &word);
-void printAnswer(const string &word, bool verdict);
+void printAnswer(const vector<bool> &verdicts);
 bool isParsable(unsigned wordSize, const ParsingTable &parsingTable);
 set<string> merge(const SetsPair &pairOfSets);
 set<string> getVariablesForRules(

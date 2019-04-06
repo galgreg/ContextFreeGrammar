@@ -31,12 +31,16 @@ int main() {
 	while (std::getline(std::cin, inputLine) && inputLine != "0") {
 		words.push_back(inputLine);
 	}
+	const size_t wordsCount = words.size();
+	vector<bool> verdicts(wordsCount);
+	
 	auto beginTime = Clock::now();	
-	for(auto word : words) {
-		bool verdict = belongsToLanguage(grammarRules, word);
-		printAnswer(word, verdict);
+	for(size_t i = 0; i < wordsCount; ++i) {
+		verdicts[i] = belongsToLanguage(grammarRules, words[i]);
 	}
 	auto endTime = Clock::now();
+	
+	printAnswer(verdicts);
 	TimeMeasure executionTime = endTime - beginTime;
 	std::cout << "Execution time: " << executionTime.count()
 			<< " seconds." << std::endl;
@@ -138,12 +142,14 @@ vector<string> split(
 	}
 	return std::move(tokens);
 }
-void printAnswer(const string &word, bool isParsable) {
-	string answer = "NIE";
-	if (isParsable) {
-		answer = "TAK";
+void printAnswer(const vector<bool> &verdicts) {
+	for (auto verdict : verdicts) {
+		if (verdict) {
+			std::cout << "TAK\n";
+		} else {
+			std::cout << "NIE\n";
+		}
 	}
-	std::cout << "\'" << word << "\': " << answer << std::endl;
 }
 //------------------------- Function for debug purpose! ----------------------------
 void print(const ParsingTable &parsingTable) {
