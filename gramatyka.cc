@@ -1,6 +1,7 @@
 #include "gramatyka.h"
 #include <iostream>
 #include <sstream>
+#include <omp.h>
 #define PRINT_DEBUG 0
 //--------------- main function ---------------------------
 int main() {
@@ -34,7 +35,7 @@ int main() {
 	const size_t wordsCount = words.size();
 	vector<bool> verdicts(wordsCount);
 	
-	auto beginTime = Clock::now();	
+	auto beginTime = Clock::now();
 	for(size_t i = 0; i < wordsCount; ++i) {
 		verdicts[i] = belongsToLanguage(grammarRules, words[i]);
 	}
@@ -56,14 +57,20 @@ bool belongsToLanguage(
 			wordSize,
 			ParsingColumn(wordSize, set<string>({""})));	
 	
-	for (unsigned i = 0; i != wordSize; ++i) {
-		string temp(1, word[i]);
-		auto variablesRange = std::move(grammarRules.equal_range(temp));
-		for (auto it = variablesRange.first; it != variablesRange.second; ++it) {
-			parsingTable[i][i].clear();
-			parsingTable[i][i].insert(it->second);
+	#pragma omp parallel if(wordSize > 100)
+	{
+		#pragma omp for nowait
+		for (unsigned i = 0; i < wordSize; ++i) {
+			string temp(1, word[i]);
+			auto variablesRange = std::move(grammarRules.equal_range(temp));
+			for (auto it = variablesRange.first; it != variablesRange.second; ++it) {
+				parsingTable[i][i].clear();
+				parsingTable[i][i].insert(it->second);
+			}
 		}
 	}
+	
+	
 	for (unsigned r = 1; r < wordSize; ++r) {
 		for(unsigned i = 0; i < wordSize-r; ++i) {
 			const unsigned j = i + r;
@@ -72,18 +79,24 @@ bool belongsToLanguage(
 			#if PRINT_DEBUG == 1
 			printWhichCellInTable(i, j);
 			#endif
-			for(unsigned k = i; k < j; ++k) {
-				auto pairOfSets = std::make_pair(parsingTable[i][k], parsingTable[k+1][j]);
-				auto rulesToCheck = merge(pairOfSets);
-				#if PRINT_DEBUG == 1
-				print(rulesToCheck, "rulesToCheck", i, j, k);
-				#endif
-				auto variableSet = getVariablesForRules(grammarRules, rulesToCheck);
-				#if PRINT_DEBUG == 1
-				print(variableSet, "variableSet", i, j, k);
-				#endif
-				currentCell.insert(variableSet.cbegin(), variableSet.cend());
+			
+			#pragma omp parallel if(wordSize > 100)
+			{
+				#pragma omp for nowait
+				for(unsigned k = i; k < j; ++k) {
+					auto pairOfSets = std::make_pair(parsingTable[i][k], parsingTable[k+1][j]);
+					auto rulesToCheck = merge(pairOfSets);
+					#if PRINT_DEBUG == 1
+					print(rulesToCheck, "rulesToCheck", i, j, k);
+					#endif
+					auto variableSet = getVariablesForRules(grammarRules, rulesToCheck);
+					#if PRINT_DEBUG == 1
+					print(variableSet, "variableSet", i, j, k);
+					#endif
+					currentCell.insert(variableSet.cbegin(), variableSet.cend());
+				}
 			}
+			
 		}
 	}
 	#if PRINT_DEBUG == 1
