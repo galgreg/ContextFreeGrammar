@@ -57,7 +57,7 @@ bool belongsToLanguage(
 	
 	ParsingTable parsingTable(
 			wordSize,
-			ParsingColumn(wordSize));
+			ParsingColumn(wordSize, set<string>({""})));
 	
 	#pragma omp parallel if(wordSize > 100) default(none) \
 	shared(word, grammarRules, parsingTable)
@@ -66,32 +66,27 @@ bool belongsToLanguage(
 		for (unsigned i = 0; i < wordSize; ++i) {
 			string temp(1, word[i]);
 			auto variablesRange = std::move(grammarRules.equal_range(temp));
-			set<string> tempSet;
+			parsingTable[i][i].clear();
 			for (auto it = variablesRange.first; it != variablesRange.second; ++it) {
-				tempSet.insert(it->second);
+				parsingTable[i][i].insert(it->second);
 			}
-			parsingTable[i][i].push_back(std::move(tempSet));
 		}
 	}
 	
 	for (unsigned r = 1; r < wordSize; ++r) {
-		for(unsigned i = 0; i < wordSize-r; ++i) {
-			const unsigned j = i + r;
-			auto &currentCell = parsingTable[i][j];
-			const unsigned numberOfVariableSets = r;
-			currentCell.resize(numberOfVariableSets);
-			#if DEBUG_PRINT_BELONGS_TO_LANGUAGE == 1
-			printWhichCellInTable(i, j);
-			#endif
-			
-			#pragma omp parallel if(wordSize > 100) default(none) \
-			shared(parsingTable, grammarRules, currentCell, i)
-			{
-				#pragma omp for nowait
+		#pragma omp parallel if(wordSize > 100)
+		{
+			#pragma omp for nowait
+			for(unsigned i = 0; i < wordSize-r; ++i) {
+				const unsigned j = i + r;
+				auto &currentCell = parsingTable[i][j];
+				currentCell.clear();
+				#if DEBUG_PRINT_BELONGS_TO_LANGUAGE == 1
+				printWhichCellInTable(i, j);
+				#endif
+				
 				for(unsigned k = i; k < j; ++k) {
-					auto leftSubstringCell = parsingTable[i][k][0];
-					auto rightSubstringCell = parsingTable[k+1][j][0];
-					auto pairOfSets = std::make_pair(leftSubstringCell, rightSubstringCell);
+					auto pairOfSets = std::make_pair(parsingTable[i][k], parsingTable[k+1][j]);
 					auto rulesToCheck = merge(pairOfSets);
 					#if DEBUG_PRINT_BELONGS_TO_LANGUAGE == 1
 					print(rulesToCheck, "rulesToCheck", i, j, k);
@@ -100,25 +95,15 @@ bool belongsToLanguage(
 					#if DEBUG_PRINT_BELONGS_TO_LANGUAGE == 1
 					print(variableSet, "variableSet", i, j, k);
 					#endif
-					const unsigned index = k - i;
-					currentCell[index].insert(variableSet.cbegin(), variableSet.cend());
+					currentCell.insert(variableSet.cbegin(), variableSet.cend());
 				}
 			}
-			prepareCellForFutureUsage(currentCell);
 		}
 	}
 	#if DEBUG_PRINT_PARSING_TABLE == 1
 	print(parsingTable);
 	#endif
 	return isParsable(wordSize, parsingTable);
-}
-
-VariableSet getCellContent(const ParsingCell &cell) {
-	VariableSet cellContent;
-	for (const auto &item : cell) {
-		cellContent.insert(item.cbegin(), item.cend());
-	}
-	return std::move(cellContent);
 }
 
 set<string> merge(const SetsPair &pairOfSets) {
@@ -146,20 +131,14 @@ set<string> getVariablesForRules(
 	return std::move(variables);
 }
 
-void prepareCellForFutureUsage(ParsingCell &cell) {
-	VariableSet cellContent = getCellContent(cell);
-	cell.clear();
-	cell.push_back(cellContent);
-}
-
 bool isParsable(unsigned wordSize, const ParsingTable &parsingTable) {
-	const auto &cellContent = parsingTable[0][wordSize-1][0];
-		
-	const auto it = cellContent.find("S");
-	if (it != cellContent.cend()) {
+	const auto &variableSet = parsingTable[0][wordSize-1];
+	auto it = variableSet.find("S");
+	if (it != variableSet.end()) {
 		return true;
+	} else {
+		return false;
 	}
-	return false;
 }
 //--------------- Auxiliary I/O functions -----------------------------
 vector<string> split(
@@ -192,13 +171,12 @@ void print(const ParsingTable &parsingTable) {
 			<< parsingTable.size() << ":\n";
 	for (unsigned i = 0; i != parsingTable.size(); ++i) {
 		for (unsigned j = 0; j != parsingTable[i].size(); ++j) {
-			const auto &cellContent = parsingTable[i][j][0];
-
-			if (cellContent.cbegin()->empty()) {
+			const auto &cell = parsingTable[i][j];
+			if (cell.cbegin()->empty()) {
 				continue;
 			} else {
 				std::cout << "parsingTable[" << i << "][" << j << "]: ";
-				for (const auto &item : cellContent) {
+				for (const auto &item : cell) {
 					std::cout << "\'" << item << "\' ";
 				}
 				std::cout << std::endl;
