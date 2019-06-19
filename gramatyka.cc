@@ -5,6 +5,7 @@
 #define DEBUG_PRINT_GRAMMAR_RULES 0
 #define DEBUG_PRINT_BELONGS_TO_LANGUAGE 0
 #define DEBUG_PRINT_PARSING_TABLE 0
+const unsigned WORDSIZE_THRESHOLD_PARALLEL = 100;
 //--------------- main function ---------------------------
 int main() {
 	string inputLine;
@@ -59,8 +60,7 @@ bool belongsToLanguage(
 			wordSize,
 			ParsingColumn(wordSize, set<string>({""})));
 	
-	#pragma omp parallel if(wordSize > 100) default(none) \
-	shared(word, grammarRules, parsingTable)
+	#pragma omp parallel if(wordSize > WORDSIZE_THRESHOLD_PARALLEL)
 	{
 		#pragma omp for nowait
 		for (unsigned i = 0; i < wordSize; ++i) {
@@ -74,7 +74,7 @@ bool belongsToLanguage(
 	}
 	
 	for (unsigned r = 1; r < wordSize; ++r) {
-		#pragma omp parallel if(wordSize > 100)
+		#pragma omp parallel if(wordSize > WORDSIZE_THRESHOLD_PARALLEL)
 		{
 			#pragma omp for nowait
 			for(unsigned i = 0; i < wordSize-r; ++i) {
