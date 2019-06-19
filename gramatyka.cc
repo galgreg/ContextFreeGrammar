@@ -53,13 +53,14 @@ int main() {
 bool belongsToLanguage(
 		const RulesMap &grammarRules,
 		const string &word) {
-	unsigned wordSize = word.size();
+	const unsigned wordSize = word.size();
 	
 	ParsingTable parsingTable(
 			wordSize,
-			ParsingColumn(wordSize, set<string>({""})));	
+			ParsingColumn(wordSize, set<string>({""})));
 	
-	#pragma omp parallel if(wordSize > 100)
+	#pragma omp parallel if(wordSize > 100) default(none) \
+	shared(word, grammarRules, parsingTable)
 	{
 		#pragma omp for nowait
 		for (unsigned i = 0; i < wordSize; ++i) {
@@ -72,7 +73,6 @@ bool belongsToLanguage(
 		}
 	}
 	
-	
 	for (unsigned r = 1; r < wordSize; ++r) {
 		for(unsigned i = 0; i < wordSize-r; ++i) {
 			const unsigned j = i + r;
@@ -82,7 +82,8 @@ bool belongsToLanguage(
 			printWhichCellInTable(i, j);
 			#endif
 			
-			#pragma omp parallel if(wordSize > 100)
+			#pragma omp parallel if(wordSize > 100) default(none) \
+			shared(parsingTable, grammarRules, currentCell, i)
 			{
 				#pragma omp for nowait
 				for(unsigned k = i; k < j; ++k) {
@@ -95,10 +96,12 @@ bool belongsToLanguage(
 					#if DEBUG_PRINT_BELONGS_TO_LANGUAGE == 1
 					print(variableSet, "variableSet", i, j, k);
 					#endif
-					currentCell.insert(variableSet.cbegin(), variableSet.cend());
+					#pragma omp critical
+					{
+						currentCell.insert(variableSet.cbegin(), variableSet.cend());
+					}
 				}
 			}
-			
 		}
 	}
 	#if DEBUG_PRINT_PARSING_TABLE == 1
