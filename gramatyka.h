@@ -8,24 +8,26 @@
 using std::vector;
 using std::string;
 using std::set;
-using ParsingTable = vector<vector<set<string>>>;
 using ParsingColumn = vector<set<string>>;
+using ParsingTable = vector<ParsingColumn>;
 using Clock = std::chrono::high_resolution_clock;
 using TimeMeasure = std::chrono::duration<double>;
 using RulesMap = std::unordered_multimap<string, string>;
 using SetsPair = std::pair<set<string>, set<string>>;
 
-//--------------- Function declarations ---------------------------
+//--------------- Auxiliary I/O functions -----------------------------
 vector<string> split(const string &text, const string &delimiter);
+void printAnswer(const vector<bool> &verdicts);
+//--------------- Algorithm functions ---------------------------
 bool belongsToLanguage(
 		const RulesMap &grammarRules,
 		const string &word);
-void printAnswer(const vector<bool> &verdicts);
-bool isParsable(unsigned wordSize, const ParsingTable &parsingTable);
 set<string> merge(const SetsPair &pairOfSets);
 set<string> getVariablesForRules(
 		const RulesMap &grammarRules,
 		const set<string> &rulesToCheck);
+bool isParsable(unsigned wordSize, const ParsingTable &parsingTable);
+// ----------- Debug purpose functions ---------------------------
 void print(const ParsingTable &parsingTable);
 void print(const RulesMap &grammarRules);
 void printWhichCellInTable(unsigned i, unsigned j);

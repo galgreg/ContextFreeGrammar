@@ -2,7 +2,9 @@
 #include <iostream>
 #include <sstream>
 #include <omp.h>
-#define PRINT_DEBUG 0
+#define DEBUG_PRINT_GRAMMAR_RULES 0
+#define DEBUG_PRINT_BELONGS_TO_LANGUAGE 0
+#define DEBUG_PRINT_PARSING_TABLE 0
 //--------------- main function ---------------------------
 int main() {
 	string inputLine;
@@ -25,7 +27,7 @@ int main() {
 			++i;
 		}
 	}
-	#if PRINT_DEBUG == 1
+	#if DEBUG_PRINT_GRAMMAR_RULES == 1
 	print(grammarRules);
 	#endif
 	
@@ -63,8 +65,8 @@ bool belongsToLanguage(
 		for (unsigned i = 0; i < wordSize; ++i) {
 			string temp(1, word[i]);
 			auto variablesRange = std::move(grammarRules.equal_range(temp));
+			parsingTable[i][i].clear();
 			for (auto it = variablesRange.first; it != variablesRange.second; ++it) {
-				parsingTable[i][i].clear();
 				parsingTable[i][i].insert(it->second);
 			}
 		}
@@ -76,7 +78,7 @@ bool belongsToLanguage(
 			const unsigned j = i + r;
 			auto &currentCell = parsingTable[i][j];
 			currentCell.clear();
-			#if PRINT_DEBUG == 1
+			#if DEBUG_PRINT_BELONGS_TO_LANGUAGE == 1
 			printWhichCellInTable(i, j);
 			#endif
 			
@@ -86,11 +88,11 @@ bool belongsToLanguage(
 				for(unsigned k = i; k < j; ++k) {
 					auto pairOfSets = std::make_pair(parsingTable[i][k], parsingTable[k+1][j]);
 					auto rulesToCheck = merge(pairOfSets);
-					#if PRINT_DEBUG == 1
+					#if DEBUG_PRINT_BELONGS_TO_LANGUAGE == 1
 					print(rulesToCheck, "rulesToCheck", i, j, k);
 					#endif
 					auto variableSet = getVariablesForRules(grammarRules, rulesToCheck);
-					#if PRINT_DEBUG == 1
+					#if DEBUG_PRINT_BELONGS_TO_LANGUAGE == 1
 					print(variableSet, "variableSet", i, j, k);
 					#endif
 					currentCell.insert(variableSet.cbegin(), variableSet.cend());
@@ -99,7 +101,7 @@ bool belongsToLanguage(
 			
 		}
 	}
-	#if PRINT_DEBUG == 1
+	#if DEBUG_PRINT_PARSING_TABLE == 1
 	print(parsingTable);
 	#endif
 	return isParsable(wordSize, parsingTable);
