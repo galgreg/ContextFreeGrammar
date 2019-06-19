@@ -8,7 +8,9 @@
 using std::vector;
 using std::string;
 using std::set;
-using ParsingColumn = vector<set<string>>;
+using VariableSet = set<string>;
+using ParsingCell = vector<VariableSet>;
+using ParsingColumn = vector<ParsingCell>;
 using ParsingTable = vector<ParsingColumn>;
 using Clock = std::chrono::high_resolution_clock;
 using TimeMeasure = std::chrono::duration<double>;
@@ -22,10 +24,12 @@ void printAnswer(const vector<bool> &verdicts);
 bool belongsToLanguage(
 		const RulesMap &grammarRules,
 		const string &word);
+VariableSet getCellContent(const ParsingCell &cell);
 set<string> merge(const SetsPair &pairOfSets);
 set<string> getVariablesForRules(
 		const RulesMap &grammarRules,
 		const set<string> &rulesToCheck);
+void prepareCellForFutureUsage(ParsingCell &cell);
 bool isParsable(unsigned wordSize, const ParsingTable &parsingTable);
 // ----------- Debug purpose functions ---------------------------
 void print(const ParsingTable &parsingTable);
