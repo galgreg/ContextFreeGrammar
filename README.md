@@ -1,6 +1,3 @@
-
-
-
 # Context-free grammar
 ## Task description
 Check if [context-free grammar](https://en.wikipedia.org/wiki/Context-free_grammar), given in [Chomsky Normal Form](https://en.wikipedia.org/wiki/Chomsky_normal_form), can produce given word (string of characters).
