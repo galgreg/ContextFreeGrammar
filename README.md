@@ -20,7 +20,7 @@ Each input string has length **_n_**, where 0 < **_n_** < 1001.
 ### Warning
 In order to program work properly, it's important to be sure that line endings match to system native settings.  
 It means, that for Linux it should be `LF`, for Windows `CRLF`, and for some old Macs `CR`.  
-Without correctly set line endings, is likely that program execution will corrupt.
+Without correctly set line endings, it's likely that program execution will corrupt.
 
 ## Output
 For each given word, program has to output the answer:
