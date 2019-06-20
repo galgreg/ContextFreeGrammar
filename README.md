@@ -1,5 +1,6 @@
 
 
+
 # Context-free grammar
 ## Task description
 Check if [context-free grammar](https://en.wikipedia.org/wiki/Context-free_grammar), given in [Chomsky Normal Form](https://en.wikipedia.org/wiki/Chomsky_normal_form), can produce given word (string of characters).
@@ -15,6 +16,11 @@ Each nonterminal symbol can be only a letter from set: `{S, A, B, C, D, E, F, G}
 `S` is the start symbol.
 
 Each input string has length **_n_**, where 0 < **_n_** < 1001.
+
+### Warning
+In order to program work properly, it's important to be sure that line endings match to system native settings.  
+It means, that for Linux it should be `LF`, for Windows `CRLF`, and for some old Macs `CR`.  
+Without correctly set line endings, is likely that program execution will corrupt.
 
 ## Output
 For each given word, program has to output the answer:
