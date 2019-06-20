@@ -10,16 +10,16 @@ Production set and input strings should always be separated by additional empty 
 The last input string should be `0`, which means end of input data.  
 `0` shouldn't be processed by program, it only indicates that there is no more input strings to process.
 
-Each terminal symbol can be only a letter from set: `{a, b, c, d, e, f, g, h}`.
-Each nonterminal symbol can be only a letter from set: `{S, A, B, C, D, E, F, G}`.
+Each terminal symbol can be only a letter from set: `{a, b, c, d, e, f, g, h}`.  
+Each nonterminal symbol can be only a letter from set: `{S, A, B, C, D, E, F, G}`.  
 `S` is the start symbol.
 
 Each input string has length **_n_**, where 0 < **_n_** < 1001.
 
 ## Output
 For each given word, program has to output the answer:
-* `TRUE` -> if given word belongs to language given by production set
-* `FALSE` -> otherwise
+* `TRUE` - if given word belongs to language given by production set
+* `FALSE` - otherwise
 ## Samples:
   **Input data** - _input.txt_
   ```
