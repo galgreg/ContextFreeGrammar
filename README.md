@@ -54,13 +54,22 @@ Program use standard streams to receive input data and generate output results.
 
 ## How to run on Linux
 ### 1. Install g++ compiler
-  * `sudo apt-get update`
-  * `sudo apt-get install g++`
+  ```
+sudo apt-get update
+sudo apt-get install g++
+  ```
 ### 2. Clone Git repo
+  ```
+git clone https://gitlab.com/galgreg/gramatyka.git
+  ```
 ### 3. Compile program
-  * `g++ -fopenmp -O3 gramatyka.cc -o gramatyka`
+  ```
+g++ -fopenmp -O3 gramatyka.cc -o gramatyka
+  ```
 ### 4. Run program
-  * `./gramatyka <input.txt >output.txt`
+  ```
+./gramatyka <input.txt >output.txt
+  ```
 
 ## How to run on Windows
 To run on Windows, your compiler have to support C++11 standard and OpenMP library.  
