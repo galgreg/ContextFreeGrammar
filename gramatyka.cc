@@ -159,9 +159,9 @@ vector<string> split(
 void printAnswer(const vector<bool> &verdicts) {
 	for (auto verdict : verdicts) {
 		if (verdict) {
-			std::cout << "TAK\n";
+			std::cout << "TRUE\n";
 		} else {
-			std::cout << "NIE\n";
+			std::cout << "FALSE\n";
 		}
 	}
 }
