@@ -1,0 +1,11 @@
+FALSE
+FALSE
+FALSE
+FALSE
+FALSE
+TRUE
+TRUE
+TRUE
+TRUE
+TRUE
+Execution time: 28.8373 seconds.

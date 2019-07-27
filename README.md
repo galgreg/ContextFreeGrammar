@@ -71,7 +71,7 @@ g++ -fopenmp -O3 gramatyka.cc -o gramatyka
   ```
 ### 4. Run program
   ```
-./gramatyka <input.txt >output.txt
+./gramatyka <example_input.txt >example_output.txt
   ```
 
 ## How to run on Windows
