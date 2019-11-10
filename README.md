@@ -63,7 +63,7 @@ sudo apt-get install g++
   ```
 ### 2. Clone Git repo
   ```
-git clone https://gitlab.com/galgreg/gramatyka.git
+git clone https://github.com/galgreg/ContextFreeGrammar.git
   ```
 ### 3. Compile program
   ```
